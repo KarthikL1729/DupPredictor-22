@@ -15,7 +15,7 @@ def parse(filename):
 
 dat = parse('QueryResultsSU.csv')
 fields = dat[0]
-dat = dat[1:]
+dat = dat[1:300]
 
 h = html2text.HTML2Text()
 
@@ -47,7 +47,7 @@ with open('parsed_SU.csv', 'w') as f:
 
 dat_dup = parse('QueryResults_dup.csv')
 fields = dat_dup[0]
-dat_dup = dat_dup[1:]
+dat_dup = dat_dup[1:80]
 
 with open('parsed_dup.csv', 'w') as f:
     writer = csv.writer(f)
