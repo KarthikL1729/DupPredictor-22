@@ -167,3 +167,17 @@ for i in dup:
 # print(tag_score)
 # print(desc_score)
 # print(topic_score)
+
+print(len(dup))
+print(len(pastq))
+
+
+title_score = np.array(title_score)
+tag_score = np.array(tag_score)
+desc_score = np.array(desc_score)
+topic_score = np.array(topic_score)
+
+np.reshape(title_score, (len(dup), len(pastq)))
+np.reshape(tag_score, (len(dup), len(pastq)))
+np.reshape(desc_score, (len(dup), len(pastq)))
+np.reshape(topic_score, (len(dup), len(pastq)))
