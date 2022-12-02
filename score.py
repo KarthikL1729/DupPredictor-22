@@ -33,14 +33,14 @@ desc_data = []
 for p in pastq:
 
     # title
-    p_0 = p[0].replace("'", "").strip('][').split(', ')     #changing from string to list
+    p_title = p[1].replace("'", "").strip('][').split(', ')     #changing from string to list
 
-    titles_data = unions(titles_data, p_0)
+    titles_data = unions(titles_data, p_title)
 
     # description
-    p_2 = p[2].replace("'", "").strip('][').split(', ')
+    p_desc = p[2].replace("'", "").strip('][').split(', ')
 
-    desc_data = unions(desc_data, p_2)
+    desc_data = unions(desc_data, p_desc)
 
 
 # topic data
@@ -75,18 +75,18 @@ for i in dup:
         title_i = []
         title_j = []
 
-        i_0 = i[0].replace("'", "").strip('][').split(', ')     #changing from string to list
-        j_0 = j[0].replace("'", "").strip('][').split(', ')
+        i_title = i[1].replace("'", "").strip('][').split(', ')     #changing from string to list
+        j_title = j[1].replace("'", "").strip('][').split(', ')
 
-        u_title = unions(i_0, j_0)
+        u_title = unions(i_title, j_title)
         size_i = 0
         size_j = 0
 
         for idx, word in enumerate(u_title):
-            title_i.append(i_0.count(word)/len(i_0))      # Normalizing to wt
-            title_j.append(j_0.count(word)/len(j_0))
-            size_i += (i_0.count(word)/len(i_0))**2
-            size_j += (j_0.count(word)/len(j_0))**2     # Size parameter for denominator
+            title_i.append(i_title.count(word)/len(i_title))      # Normalizing to wt
+            title_j.append(j_title.count(word)/len(j_title))
+            size_i += (i_title.count(word)/len(i_title))**2
+            size_j += (j_title.count(word)/len(j_title))**2     # Size parameter for denominator
 
         title_score.append( np.dot(title_i, title_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
@@ -98,18 +98,18 @@ for i in dup:
         tag_i = []
         tag_j = []
 
-        i_1 = i[1].replace("'", "").strip('][').split(', ')
-        j_1 = j[1].replace("'", "").strip('][').split(', ')
+        i_tag = i[3].replace("'", "").strip('][').split(', ')
+        j_tag = j[3].replace("'", "").strip('][').split(', ')
 
-        u_tag = unions(i_1, j_1)
+        u_tag = unions(i_tag, j_tag)
         size_i = 0
         size_j = 0
 
         for idx, word in enumerate(u_tag):
-            tag_i.append(i_1.count(word)/len(i_1))      # Normalizing to wt
-            tag_j.append(j_1.count(word)/len(j_1))
-            size_i += (i_1.count(word)/len(i_1))**2
-            size_j += (j_1.count(word)/len(j_1))**2     # Size parameter for denominator
+            tag_i.append(i_tag.count(word)/len(i_tag))      # Normalizing to wt
+            tag_j.append(j_tag.count(word)/len(j_tag))
+            size_i += (i_tag.count(word)/len(i_tag))**2
+            size_j += (j_tag.count(word)/len(j_tag))**2     # Size parameter for denominator
 
         tag_score.append( np.dot(tag_i, tag_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
@@ -121,18 +121,18 @@ for i in dup:
         desc_i = []
         desc_j = []
 
-        i_2 = i[2].replace("'", "").strip('][').split(', ')
-        j_2 = j[2].replace("'", "").strip('][').split(', ')
+        i_desc = i[2].replace("'", "").strip('][').split(', ')
+        j_desc = j[2].replace("'", "").strip('][').split(', ')
 
-        u_desc = unions(i_2, j_2)
+        u_desc = unions(i_desc, j_desc)
         size_i = 0
         size_j = 0
 
         for idx, word in enumerate(u_desc):
-            desc_i.append(i_2.count(word)/len(i_2))      # Normalizing to wt
-            desc_j.append(j_2.count(word)/len(j_2))
-            size_i += (i_2.count(word)/len(i_2))**2
-            size_j += (j_2.count(word)/len(j_2))**2     # Size parameter for denominator
+            desc_i.append(i_desc.count(word)/len(i_desc))      # Normalizing to wt
+            desc_j.append(j_desc.count(word)/len(j_desc))
+            size_i += (i_desc.count(word)/len(i_desc))**2
+            size_j += (j_desc.count(word)/len(j_desc))**2     # Size parameter for denominator
 
         desc_score.append( np.dot(desc_i, desc_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
@@ -141,12 +141,12 @@ for i in dup:
 
 
         # topic
-        i_topics = unions(i_0, i_2)
+        i_topics = unions(i_title, i_desc)
         corpus_i = id2word_dict.doc2bow(i_topics)
         prob_i = np.array(lda_model[corpus_i])[:,1] 
         doc_i = lda_model[corpus_i]
 
-        j_topics = unions(j_0, j_2)
+        j_topics = unions(j_title, j_desc)
         corpus_j = id2word_dict.doc2bow(j_topics)
         prob_j = np.array(lda_model[corpus_j])[:,1] 
         doc_j = lda_model[corpus_j]
