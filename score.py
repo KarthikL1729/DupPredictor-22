@@ -6,6 +6,7 @@ from numpy.linalg import norm
 from gensim import corpora, models, matutils
 from pprint import pprint
 
+
 def unions(l1, l2):
     return list(set().union(l1, l2))
 
@@ -33,7 +34,8 @@ desc_data = []
 for p in pastq:
 
     # title
-    p_title = p[1].replace("'", "").strip('][').split(', ')     #changing from string to list
+    p_title = p[1].replace("'", "").strip('][').split(
+        ', ')  # changing from string to list
 
     titles_data = unions(titles_data, p_title)
 
@@ -46,27 +48,29 @@ for p in pastq:
 # topic data
 u_topic = unions(titles_data, desc_data)
 
-#building LDA model on past q
+# building LDA model on past q
 dataset = [d.split() for d in u_topic]
-id2word_dict = corpora.Dictionary(dataset)       #maps each word to a unique id
+id2word_dict = corpora.Dictionary(dataset)  # maps each word to a unique id
 
-corpus = [id2word_dict.doc2bow(word) for word in dataset]        #maps word ids to word frequencies
+# maps word ids to word frequencies
+corpus = [id2word_dict.doc2bow(word) for word in dataset]
 
 # number of topics (this should be 100 according to the paper)
 num_topics = 12
 
 # Build LDA model
-lda_model = models.LdaMulticore(corpus=corpus, id2word=id2word_dict, num_topics=num_topics, minimum_probability=0.0)
+lda_model = models.LdaMulticore(
+    corpus=corpus, id2word=id2word_dict, num_topics=num_topics, minimum_probability=0.0)
 
 # # Print the Keywords in the 10 topics and the keywords contributions to the topic
 # pprint(lda_model.print_topics())
 # doc_lda = lda_model[corpus]
 
 
-title_score=[]
-tag_score=[]
-desc_score=[]
-topic_score=[]
+title_score = []
+tag_score = []
+desc_score = []
+topic_score = []
 
 for i in dup:
     for j in pastq:
@@ -75,7 +79,8 @@ for i in dup:
         title_i = []
         title_j = []
 
-        i_title = i[1].replace("'", "").strip('][').split(', ')     #changing from string to list
+        i_title = i[1].replace("'", "").strip('][').split(
+            ', ')  # changing from string to list
         j_title = j[1].replace("'", "").strip('][').split(', ')
 
         u_title = unions(i_title, j_title)
@@ -83,16 +88,18 @@ for i in dup:
         size_j = 0
 
         for idx, word in enumerate(u_title):
-            title_i.append(i_title.count(word)/len(i_title))      # Normalizing to wt
+            title_i.append(i_title.count(word)/len(i_title)
+                           )      # Normalizing to wt
             title_j.append(j_title.count(word)/len(j_title))
             size_i += (i_title.count(word)/len(i_title))**2
-            size_j += (j_title.count(word)/len(j_title))**2     # Size parameter for denominator
+            # Size parameter for denominator
+            size_j += (j_title.count(word)/len(j_title))**2
 
-        title_score.append( np.dot(title_i, title_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
+        title_score.append(np.dot(title_i, title_j) /
+                           (math.sqrt(size_i)*math.sqrt(size_j)))
 
-        print("title: ")
-        print(np.dot(title_i, title_j)/ (math.sqrt(size_i)*math.sqrt(size_j)))
-
+        #print("title: ")
+        #print(np.dot(title_i, title_j)/ (math.sqrt(size_i)*math.sqrt(size_j)))
 
         # tags
         tag_i = []
@@ -109,13 +116,14 @@ for i in dup:
             tag_i.append(i_tag.count(word)/len(i_tag))      # Normalizing to wt
             tag_j.append(j_tag.count(word)/len(j_tag))
             size_i += (i_tag.count(word)/len(i_tag))**2
-            size_j += (j_tag.count(word)/len(j_tag))**2     # Size parameter for denominator
+            # Size parameter for denominator
+            size_j += (j_tag.count(word)/len(j_tag))**2
 
-        tag_score.append( np.dot(tag_i, tag_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
+        tag_score.append(np.dot(tag_i, tag_j) /
+                         (math.sqrt(size_i)*math.sqrt(size_j)))
 
-        print("tag: ")
-        print( np.dot(tag_i, tag_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
-
+        #print("tag: ")
+        #print( np.dot(tag_i, tag_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
         # description
         desc_i = []
@@ -129,55 +137,54 @@ for i in dup:
         size_j = 0
 
         for idx, word in enumerate(u_desc):
-            desc_i.append(i_desc.count(word)/len(i_desc))      # Normalizing to wt
+            desc_i.append(i_desc.count(word)/len(i_desc)
+                          )      # Normalizing to wt
             desc_j.append(j_desc.count(word)/len(j_desc))
             size_i += (i_desc.count(word)/len(i_desc))**2
-            size_j += (j_desc.count(word)/len(j_desc))**2     # Size parameter for denominator
+            # Size parameter for denominator
+            size_j += (j_desc.count(word)/len(j_desc))**2
 
-        desc_score.append( np.dot(desc_i, desc_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
+        desc_score.append(np.dot(desc_i, desc_j) /
+                          (math.sqrt(size_i)*math.sqrt(size_j)))
 
-        print("desc: ")
-        print( np.dot(desc_i, desc_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
-
+        #print("desc: ")
+        #print( np.dot(desc_i, desc_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
         # topic
         i_topics = unions(i_title, i_desc)
         corpus_i = id2word_dict.doc2bow(i_topics)
-        prob_i = np.array(lda_model[corpus_i])[:,1] 
+        prob_i = np.array(lda_model[corpus_i])[:, 1]
         doc_i = lda_model[corpus_i]
 
         j_topics = unions(j_title, j_desc)
         corpus_j = id2word_dict.doc2bow(j_topics)
-        prob_j = np.array(lda_model[corpus_j])[:,1] 
+        prob_j = np.array(lda_model[corpus_j])[:, 1]
         doc_j = lda_model[corpus_j]
 
-        topic_score.append( np.dot(prob_i, prob_j) / ( norm(prob_i)*norm(prob_j) ) )
+        topic_score.append(np.dot(prob_i, prob_j) /
+                           (norm(prob_i)*norm(prob_j)))
         #topic_score.append( matutils.cossim(doc_i, doc_j) )
-        
-        print("topic: ")
+
+        #print("topic: ")
         # print( lda_model.get_document_topics(corpus_i) )
         # print( lda_model.get_document_topics(corpus_j) )
 
         #print(matutils.cossim(doc_i, doc_j))
-        print( np.dot(prob_i, prob_j) / ( norm(prob_i)*norm(prob_j) ) )
-        print()
-        
+        #print( np.dot(prob_i, prob_j) / ( norm(prob_i)*norm(prob_j) ) )
+        # print()
+
 
 # print(title_score)
 # print(tag_score)
 # print(desc_score)
 # print(topic_score)
 
-print(len(dup))
-print(len(pastq))
+title_score = np.array(title_score, ndmin=2)
+tag_score = np.array(tag_score, ndmin=2)
+desc_score = np.array(desc_score, ndmin=2)
+topic_score = np.array(topic_score, ndmin=2)
 
-
-title_score = np.array(title_score)
-tag_score = np.array(tag_score)
-desc_score = np.array(desc_score)
-topic_score = np.array(topic_score)
-
-np.reshape(title_score, (len(dup), len(pastq)))
-np.reshape(tag_score, (len(dup), len(pastq)))
-np.reshape(desc_score, (len(dup), len(pastq)))
-np.reshape(topic_score, (len(dup), len(pastq)))
+title_score = np.reshape(title_score, (len(dup), len(pastq)))
+tag_score = np.reshape(tag_score, (len(dup), len(pastq)))
+desc_score = np.reshape(desc_score, (len(dup), len(pastq)))
+topic_score = np.reshape(topic_score, (len(dup), len(pastq)))
