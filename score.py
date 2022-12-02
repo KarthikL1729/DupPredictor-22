@@ -65,8 +65,8 @@ def tagscore(q_i, q_j):
     tag_i = []
     tag_j = []
 
-    i_tag = q_i[3].replace("'", "").strip('][').split(', ')
-    j_tag = q_j[3].replace("'", "").strip('][').split(', ')
+    i_tag = q_i[3]#.replace("'", "").strip('][').split(', ')
+    j_tag = q_j[3]#.replace("'", "").strip('][').split(', ')
 
     u_tag = unions(i_tag, j_tag)
     size_i = 0
@@ -195,11 +195,11 @@ for i in dup:
 # print(topic_score)
 
 title_score = np.array(title_score, ndmin=2)
-tag_score = np.array(tag_score, ndmin=2)
 desc_score = np.array(desc_score, ndmin=2)
+tag_score = np.array(tag_score, ndmin=2)
 topic_score = np.array(topic_score, ndmin=2)
 
 title_score = np.reshape(title_score, (len(dup), len(pastq)))
-tag_score = np.reshape(tag_score, (len(dup), len(pastq)))
 desc_score = np.reshape(desc_score, (len(dup), len(pastq)))
+tag_score = np.reshape(tag_score, (len(dup), len(pastq)))
 topic_score = np.reshape(topic_score, (len(dup), len(pastq)))

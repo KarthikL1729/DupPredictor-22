@@ -15,7 +15,8 @@ def parse(filename):
 
 dat = parse('QueryResultsSU_new.csv')
 fields = dat[0]
-dat = dat[1:300]
+dat = dat[1:100]
+dat_temp = dat
 
 h = html2text.HTML2Text()
 
@@ -25,7 +26,7 @@ stopwords = gensim.parsing.preprocessing.STOPWORDS
 with open('parsed_SU.csv', 'w') as f:
     writer = csv.writer(f)
     writer.writerow(fields)
-    for i in dat:
+    for i in dat_temp:
 
         i[1] = h.handle(i[1])                                                           # Converting html to text
         i[1] = list(tokenize(i[1], lowercase=True, deacc=True, errors='ignore'))        # Tokenizing
@@ -52,12 +53,15 @@ with open('parsed_SU.csv', 'w') as f:
         writer.writerow(j)
 
 dat_dup = parse('QueryResults_dup_new.csv')
+dat_dup_temp = dat_dup
 fields = dat_dup[0]
-dat_dup = dat_dup[1:80]
-
+dat_dup = dat_dup[1:20]
+dat_master = [[l[0], l[1], l[2], l[3]] for l in dat_dup]
+dat = dat + dat_master
+#print(len(dat))
 with open('parsed_SU.csv', 'a') as f:
     writer = csv.writer(f)
-    for i in dat_dup:
+    for i in dat_dup_temp:
 
         i[1] = h.handle(i[1])                                                           # Converting html to text
         i[1] = list(tokenize(i[1], lowercase=True, deacc=True, errors='ignore'))        # Tokenizing
@@ -87,7 +91,7 @@ with open('parsed_SU.csv', 'a') as f:
 with open('parsed_dup.csv', 'w') as f:
     writer = csv.writer(f)
     writer.writerow(fields[4:8])
-    for i in dat_dup:
+    for i in dat_dup_temp:
 
         i[5] = h.handle(i[5])                                                           # Converting html to text
         i[5] = list(tokenize(i[5], lowercase=True, deacc=True, errors='ignore'))        # Tokenizing

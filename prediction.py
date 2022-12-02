@@ -16,7 +16,12 @@ desc = [PorterStemmer().stem(word) for word in desc]                            
 
 tag = list(tokenize(new_tags))
 
-new_ques = [title, tag, desc]
+title = str(title)
+desc = str(desc)
+tag = str(tag)
+dumid = str(00)                     # Dummy id                                                           # Id of the new question
+
+new_ques = [dumid, title, desc,  tag]
 
 # Calculating the score
 
@@ -48,5 +53,6 @@ final = np.array(final_score)
 recall = 20
 top_recall = np.argsort(final)[::-1][:recall]
 
-print(pastq[top_recall][1])
-
+for i in top_recall:
+    #print(i)
+    print(pastq[i][0], pastq[i][1])
