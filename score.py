@@ -19,6 +19,88 @@ def parse(filename):
 
     return data
 
+def titlescore(q_i, q_j):
+    title_i = []
+    title_j = []
+
+    i_title = q_i[1].replace("'", "").strip('][').split(', ')  # changing from string to list
+    j_title = q_j[1].replace("'", "").strip('][').split(', ')
+
+    u_title = unions(i_title, j_title)
+    size_i = 0
+    size_j = 0
+
+    for idx, word in enumerate(u_title):
+        title_i.append(i_title.count(word)/len(i_title)
+                       )      # Normalizing to wt
+        title_j.append(j_title.count(word)/len(j_title))
+        size_i += (i_title.count(word)/len(i_title))**2
+        # Size parameter for denominator
+        size_j += (j_title.count(word)/len(j_title))**2
+
+    return np.dot(title_i, title_j)/(math.sqrt(size_i)*math.sqrt(size_j))
+
+def bodyscore(q_i, q_j):
+
+    body_i = []
+    body_j = []
+
+    i_body = q_i[2].replace("'", "").strip('][').split(', ')
+    j_body = q_j[2].replace("'", "").strip('][').split(', ')
+
+    u_body = unions(i_body, j_body)
+    size_i = 0
+    size_j = 0
+
+    for idx, word in enumerate(u_body):
+        body_i.append(i_body.count(word)/len(i_body))
+        body_j.append(j_body.count(word)/len(j_body))
+        size_i += (i_body.count(word)/len(i_body))**2
+        size_j += (j_body.count(word)/len(j_body))**2
+
+    return np.dot(body_i, body_j)/(math.sqrt(size_i)*math.sqrt(size_j))
+
+def tagscore(q_i, q_j):
+
+    tag_i = []
+    tag_j = []
+
+    i_tag = q_i[3].replace("'", "").strip('][').split(', ')
+    j_tag = q_j[3].replace("'", "").strip('][').split(', ')
+
+    u_tag = unions(i_tag, j_tag)
+    size_i = 0
+    size_j = 0
+
+    for idx, word in enumerate(u_tag):
+        tag_i.append(i_tag.count(word)/len(i_tag))
+        tag_j.append(j_tag.count(word)/len(j_tag))
+        size_i += (i_tag.count(word)/len(i_tag))**2
+        size_j += (j_tag.count(word)/len(j_tag))**2
+
+    return np.dot(tag_i, tag_j)/(math.sqrt(size_i)*math.sqrt(size_j))
+
+def topicscore(q_i, q_j):
+    
+    i_title = q_i[1].replace("'", "").strip('][').split(', ')  # changing from string to list
+    j_title = q_j[1].replace("'", "").strip('][').split(', ')
+    i_body = q_i[2].replace("'", "").strip('][').split(', ')
+    j_body = q_j[2].replace("'", "").strip('][').split(', ')
+
+    i_topics = unions(i_title, i_body)
+    j_topics = unions(j_title, j_body) 
+    
+    corpus_i = id2word_dict.doc2bow(i_topics)
+    prob_i = np.array(lda_model[corpus_i])[:, 1]
+    doc_i = lda_model[corpus_i]
+
+    
+    corpus_j = id2word_dict.doc2bow(j_topics)
+    prob_j = np.array(lda_model[corpus_j])[:, 1]
+    doc_j = lda_model[corpus_j]
+
+
+    return np.dot(prob_i, prob_j)/(norm(prob_i)*norm(prob_j)) 
 
 dup = parse('parsed_dup.csv')
 dup = dup[1:]                                       # Removing headers
@@ -76,93 +158,26 @@ for i in dup:
     for j in pastq:
 
         # title
-        title_i = []
-        title_j = []
-
-        i_title = i[1].replace("'", "").strip('][').split(
-            ', ')  # changing from string to list
-        j_title = j[1].replace("'", "").strip('][').split(', ')
-
-        u_title = unions(i_title, j_title)
-        size_i = 0
-        size_j = 0
-
-        for idx, word in enumerate(u_title):
-            title_i.append(i_title.count(word)/len(i_title)
-                           )      # Normalizing to wt
-            title_j.append(j_title.count(word)/len(j_title))
-            size_i += (i_title.count(word)/len(i_title))**2
-            # Size parameter for denominator
-            size_j += (j_title.count(word)/len(j_title))**2
-
-        title_score.append(np.dot(title_i, title_j) /
-                           (math.sqrt(size_i)*math.sqrt(size_j)))
+        title_score.append(titlescore(i, j))
 
         #print("title: ")
         #print(np.dot(title_i, title_j)/ (math.sqrt(size_i)*math.sqrt(size_j)))
 
         # tags
-        tag_i = []
-        tag_j = []
-
-        i_tag = i[3].replace("'", "").strip('][').split(', ')
-        j_tag = j[3].replace("'", "").strip('][').split(', ')
-
-        u_tag = unions(i_tag, j_tag)
-        size_i = 0
-        size_j = 0
-
-        for idx, word in enumerate(u_tag):
-            tag_i.append(i_tag.count(word)/len(i_tag))      # Normalizing to wt
-            tag_j.append(j_tag.count(word)/len(j_tag))
-            size_i += (i_tag.count(word)/len(i_tag))**2
-            # Size parameter for denominator
-            size_j += (j_tag.count(word)/len(j_tag))**2
-
-        tag_score.append(np.dot(tag_i, tag_j) /
-                         (math.sqrt(size_i)*math.sqrt(size_j)))
+        tag_score.append(tagscore(i, j))
 
         #print("tag: ")
         #print( np.dot(tag_i, tag_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
         # description
-        desc_i = []
-        desc_j = []
-
-        i_desc = i[2].replace("'", "").strip('][').split(', ')
-        j_desc = j[2].replace("'", "").strip('][').split(', ')
-
-        u_desc = unions(i_desc, j_desc)
-        size_i = 0
-        size_j = 0
-
-        for idx, word in enumerate(u_desc):
-            desc_i.append(i_desc.count(word)/len(i_desc)
-                          )      # Normalizing to wt
-            desc_j.append(j_desc.count(word)/len(j_desc))
-            size_i += (i_desc.count(word)/len(i_desc))**2
-            # Size parameter for denominator
-            size_j += (j_desc.count(word)/len(j_desc))**2
-
-        desc_score.append(np.dot(desc_i, desc_j) /
-                          (math.sqrt(size_i)*math.sqrt(size_j)))
+        desc_score.append(bodyscore(i, j))
 
         #print("desc: ")
         #print( np.dot(desc_i, desc_j) / (math.sqrt(size_i)*math.sqrt(size_j)) )
 
         # topic
-        i_topics = unions(i_title, i_desc)
-        corpus_i = id2word_dict.doc2bow(i_topics)
-        prob_i = np.array(lda_model[corpus_i])[:, 1]
-        doc_i = lda_model[corpus_i]
+        topic_score.append(topicscore(i, j))
 
-        j_topics = unions(j_title, j_desc)
-        corpus_j = id2word_dict.doc2bow(j_topics)
-        prob_j = np.array(lda_model[corpus_j])[:, 1]
-        doc_j = lda_model[corpus_j]
-
-        topic_score.append(np.dot(prob_i, prob_j) /
-                           (norm(prob_i)*norm(prob_j)))
         #topic_score.append( matutils.cossim(doc_i, doc_j) )
 
         #print("topic: ")
