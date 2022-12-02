@@ -1,6 +1,7 @@
-import csv 
+import csv
 import html2text
 import gensim
+import copy
 from gensim.utils import tokenize
 from gensim.parsing.preprocessing import remove_stopwords
 from gensim.parsing.porter import PorterStemmer
@@ -15,8 +16,8 @@ def parse(filename):
 
 dat = parse('QueryResultsSU_new.csv')
 fields = dat[0]
-dat = dat[1:100]
-dat_temp = dat
+dat = dat[1:5000]
+dat_temp = copy.deepcopy(dat)
 
 h = html2text.HTML2Text()
 
@@ -53,9 +54,9 @@ with open('parsed_SU.csv', 'w') as f:
         writer.writerow(j)
 
 dat_dup = parse('QueryResults_dup_new.csv')
-dat_dup_temp = dat_dup
 fields = dat_dup[0]
-dat_dup = dat_dup[1:20]
+dat_dup = dat_dup[1:150]
+dat_dup_temp = copy.deepcopy(dat_dup)
 dat_master = [[l[0], l[1], l[2], l[3]] for l in dat_dup]
 dat = dat + dat_master
 #print(len(dat))

@@ -1,4 +1,5 @@
 from score import *
+from score_train import *
 from parse import *
 import numpy as np
 
@@ -63,7 +64,9 @@ for i_ in range(iter):
             params[i] += 0.01                # 0.01 ideally
 
 best_EC_index = np.argmax(EC_score, axis=0)
-print(best_EC_index)
+#print(best_EC_index)
 
 trained_params = np.array([para_best[best_EC_index[0]][0], para_best[best_EC_index[1]][1], para_best[best_EC_index[2]][2], para_best[best_EC_index[3]][3]])
-print(trained_params)
+with open('trained_params.txt', 'w') as f:
+    for i in trained_params:
+        f.write(str(i) + " ")
