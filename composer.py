@@ -60,9 +60,10 @@ for i_ in range(iter):
                 EC_score[i_][i] = EC
                 para_best[i_][i] = params[i]
 
-            params[i] += 0.01
+            params[i] += 0.01                # 0.01 ideally
 
 best_EC_index = np.argmax(EC_score, axis=0)
 print(best_EC_index)
 
-#trained_params = np.array([para_best[best_EC_index[0]][0], para_best[best_EC_index[1]][1], para_best[best_EC_index[2]][2], para_best[best_EC_index[3]][3]])
+trained_params = np.array([para_best[best_EC_index[0]][0], para_best[best_EC_index[1]][1], para_best[best_EC_index[2]][2], para_best[best_EC_index[3]][3]])
+print(trained_params)
